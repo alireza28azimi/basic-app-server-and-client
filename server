@@ -1,0 +1,35 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"net"
+	"os"
+)
+
+func main() {
+	fmt.Println("command", os.Args[0])
+	message := "default massage"
+	if len(os.Args) > 1 {
+		message = os.Args[1]
+	}
+
+	connection, err := net.Dial("tcp", "127.0.0.1:2024")
+	if err != nil {
+		log.Fatalln("can't dial to server", err)
+	}
+	fmt.Println("connection:", connection.LocalAddr())
+	numberOfToWrite, dErr := connection.Write([]byte(message))
+	if dErr != nil {
+		log.Fatalln("i can't to write:", numberOfToWrite)
+	}
+	fmt.Println("number of written to byte", numberOfToWrite)
+	data := make([]byte, 20)
+	_, rErr := connection.Read(data)
+	if rErr != nil {
+		log.Fatal("can't read data", rErr)
+	}
+
+	fmt.Println("server response", string(data))
+
+}
